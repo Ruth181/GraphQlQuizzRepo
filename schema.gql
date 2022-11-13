@@ -1,0 +1,421 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type DefaultResponseTypeGQL {
+  message: String!
+  status: RequestStatus!
+}
+
+"""Status of http request"""
+enum RequestStatus {
+  SUCCESSFUL
+  FAILED
+}
+
+type ANSWER_ATTACHMENT {
+  id: ID!
+  answer: ANSWER!
+  link: String!
+  fileType: FileType!
+  stringPosition: Int
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+}
+
+enum FileType {
+  IMAGE
+  VIDEO
+  PDF
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ANSWER {
+  id: ID!
+  text: String!
+  question: QUESTION!
+  isCorrect: Boolean!
+  status: Boolean!
+  attachmentsForThisAnswer: [ANSWER_ATTACHMENT!]!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+}
+
+type QUESTION_ATTACHMENT {
+  id: ID!
+  link: String!
+  fileType: FileType!
+  stringPosition: Int
+  question: QUESTION!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+}
+
+type TOPIC {
+  id: ID!
+  name: String!
+  status: Boolean!
+  course: COURSE!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  questionTopicRecordsForThisTopic: [QUESTION_COURSE_TOPIC!]!
+  randomTestTopicsForThisTopic: [RANDOM_TEST_TOPIC!]!
+}
+
+type RANDOM_TEST_TOPIC {
+  id: ID!
+  topic: TOPIC!
+  randomTest: RANDOM_TEST!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+}
+
+type RANDOM_TEST {
+  id: ID!
+  course: COURSE!
+  noOfQuestions: Int!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  topicsUnderThisRandomTest: [RANDOM_TEST_TOPIC!]!
+  testRecordsForThisRandomTest: [RANDOM_TEST_QUIZ_RECORD!]!
+}
+
+type RANDOM_TEST_QUIZ_RECORD {
+  id: ID!
+  user: USER!
+  quizSession: QUIZ_SESSION!
+  randomTest: RANDOM_TEST!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+}
+
+type QUIZ_SESSION {
+  id: ID!
+  sessionKey: String!
+  course: COURSE!
+  user: USER!
+  totalPointsObtained: Int!
+  testType: TestType!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  detailsForThisQuizSession: [QUIZ_SESSION_DETAIL!]!
+  randomTestsForThisQuizSession: [RANDOM_TEST_QUIZ_RECORD!]!
+}
+
+enum TestType {
+  BALANCED_TEST
+  RANDOMIZED_TEST
+}
+
+type QUIZ_SESSION_DETAIL {
+  id: ID!
+  quizSession: QUIZ_SESSION!
+  question: QUESTION!
+  result: StatusType!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+}
+
+enum StatusType {
+  FAILED
+  CORRECT
+  SKIPPED
+}
+
+type QUESTION {
+  id: ID!
+  text: String!
+  isSingleChoiceAnswer: Boolean!
+  explanation: String
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  attachmentsForThisQuestion: [QUESTION_ATTACHMENT!]!
+  answersForThisQuestion: [ANSWER!]!
+  questionTopicRecordsForThisQuestion: [QUESTION_COURSE_TOPIC!]!
+  quizSessionDetailsForThisQuestion: [QUIZ_SESSION_DETAIL!]!
+}
+
+type QUESTION_COURSE_TOPIC {
+  id: ID!
+  question: QUESTION!
+  topic: TOPIC!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  course: COURSE!
+}
+
+type COURSE {
+  id: ID!
+  name: String!
+  department: DEPARTMENT!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  topicsUnderThisCourse: [TOPIC!]!
+  questionTopicRecordsForThisCourse: [QUESTION_COURSE_TOPIC!]!
+  randomTestsUnderThisCourse: [QUIZ_SESSION!]!
+  quizSessionsUnderThisCourse: [QUIZ_SESSION!]!
+}
+
+type DEPARTMENT {
+  id: ID!
+  name: String!
+  status: Boolean!
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  coursesUnderThisDepartment: [COURSE!]!
+  usersUnderThisDepartment: [USER!]!
+}
+
+type USER {
+  id: ID!
+  email: String!
+  firstName: String!
+  lastName: String!
+  profileImageUrl: String!
+  role: AppRole!
+  uniqueVerificationCode: String
+  jwtRefreshToken: String
+  status: Boolean!
+  department: DEPARTMENT
+  dateCreated: DateTime!
+  dateUpdated: DateTime!
+  quizSessionsForThisUser: [QUIZ_SESSION!]!
+  randomTestsTakenByThisUser: [RANDOM_TEST_QUIZ_RECORD!]!
+}
+
+"""Describes the user roles on app"""
+enum AppRole {
+  ADMIN
+  USER
+}
+
+type QuestionPartialDTO {
+  correctAnswer: String!
+  explanation: String
+  question: QUESTION!
+  result: StatusType!
+}
+
+type QuizSessionPerformanceDTO {
+  sessionKey: String!
+  totalPointsObtained: Int!
+  testType: TestType!
+  course: COURSE
+  failedQuestions: [QuestionPartialDTO!]!
+}
+
+type UserPerformanceReviewDTO {
+  topic: TOPIC!
+  questionsTaken: [QUESTION!]!
+  pointsObtained: Int!
+  totalQuestionsTaken: Int!
+}
+
+type AuthResponse {
+  userId: String!
+  email: String!
+  role: AppRole!
+  jwtRefreshToken: String
+  dateCreated: DateTime!
+  token: String!
+  tokenInitializationDate: Float!
+  tokenExpiryDate: Float!
+}
+
+type Query {
+  getHello: String!
+  finalizeForgotPasswordFlow(uniqueVerificationCode: String!): DefaultResponseTypeGQL!
+  findUserById(userId: String!): USER!
+  findUsersByStatus(status: Boolean!): [USER!]!
+  findUsersByDepartmentId(departmentId: String!): [USER!]!
+  findUsers: [USER!]!
+  findDepartmentById(departmentId: String!): DEPARTMENT!
+  findDepartments: [DEPARTMENT!]!
+  findDepartmentsByStatus(status: Boolean!): [DEPARTMENT!]!
+  findQuizSessions: [QUIZ_SESSION!]!
+  userPerformanceReview: [QuizSessionPerformanceDTO!]!
+  findSpecificUserPerformanceReview(sessionKey: String!): QuizSessionPerformanceDTO!
+  findSpecificUserPerformanceReviewByTopicsTaken(topicId: String!): UserPerformanceReviewDTO!
+  userPerformanceReviewByTopicsTaken: [UserPerformanceReviewDTO!]!
+  findPerformanceForTopicsUsingSessionKey(sessionKey: String!): [UserPerformanceReviewDTO!]!
+  findRandomTestSessionById(randomTestId: String!): RANDOM_TEST!
+  findRandomTestSessions: [RANDOM_TEST!]!
+  findRandomTestSessionsByStatus(status: Boolean!): [RANDOM_TEST!]!
+  findRandomTestSessionsByCourseId(courseId: String!): [RANDOM_TEST!]!
+  findCourseById(courseId: String!): COURSE!
+  findCoursesByDepartmentId(departmentId: String!): [COURSE!]!
+  findCourses: [COURSE!]!
+  findCoursesByStatus(status: Boolean!): [COURSE!]!
+  findTopics: [TOPIC!]!
+  findTopicsByStatus(status: Boolean!): [TOPIC!]!
+  findTopicById(topicId: String!): TOPIC!
+
+  """Returns only topics with questions attached to them"""
+  findTopicsWithQuestionsByCourseId(courseId: String!): [TOPIC!]!
+  findQuestions: [QUESTION!]!
+  findQuestionsByStatus(status: Boolean!): [QUESTION!]!
+  generateBalancedTest(courseId: String!): [QUESTION!]!
+  generateRandomTest(courseId: String!): [QUESTION!]!
+  findQuestionById(questionId: String!): QUESTION!
+}
+
+type Mutation {
+  """Sign-up"""
+  createUser(payload: CreateUserDTO!): USER!
+  deleteUserByEmail(email: String!): DefaultResponseTypeGQL!
+  verifyAccount(uniqueVerificationCode: String!): DefaultResponseTypeGQL!
+
+  """kick-off forgot password"""
+  initiateForgotPasswordFlow(email: String!): DefaultResponseTypeGQL!
+  changePassword(payload: UpdatePasswordDTO!): DefaultResponseTypeGQL!
+
+  """Used for updating user profile"""
+  updateUser(payload: UpdateUserDTO!): USER!
+  createDepartment(name: String!): DEPARTMENT!
+  updateDepartment(payload: UpdateDepartmentDTO!): DEPARTMENT!
+
+  """Called after a test is submitted or times out"""
+  createQuizSession(payload: CreateQuizSessionDTO!): QUIZ_SESSION!
+
+  """Used by examiner to set area of focus for random test"""
+  createRandomTest(payload: CreateRandomTestDTO!): RANDOM_TEST!
+  createCourse(payload: CreateCourseDTO!): COURSE!
+  updateCourse(payload: UpdateCourseDTO!): COURSE!
+  createTopic(payload: CreateTopicDTO!): TOPIC!
+  updateTopic(payload: UpdateTopicDTO!): TOPIC!
+  createQuestion(payload: CreateQuestionDTO!): QUESTION!
+  signUp(payload: CreateUserDTO!): AuthResponse!
+  login(payload: LoginDTO!): AuthResponse!
+  refreshJWTToken(refreshToken: String!): AuthResponse!
+}
+
+input CreateUserDTO {
+  email: String!
+  profileImageUrl: String
+  firstName: String!
+  lastName: String!
+  password: String!
+  role: AppRole
+  departmentId: String
+}
+
+input UpdatePasswordDTO {
+  newPassword: String!
+  uniqueVerificationCode: String!
+}
+
+input UpdateUserDTO {
+  email: String
+  profileImageUrl: String
+  firstName: String
+  lastName: String
+  role: AppRole
+  departmentId: String
+  userId: String!
+  status: Boolean
+}
+
+input UpdateDepartmentDTO {
+  departmentId: String!
+  name: String
+  status: Boolean
+}
+
+input CreateQuizSessionDTO {
+  testType: TestType!
+  courseId: String!
+  questions: [PartialCreateQuizSessionDetailDTO!]!
+}
+
+input PartialCreateQuizSessionDetailDTO {
+  questionId: String!
+  selectedAnswerId: String
+}
+
+input CreateRandomTestDTO {
+  courseId: String!
+
+  """TopicIds for random test"""
+  topics: [String!]!
+  noOfQuestions: Int!
+}
+
+input CreateCourseDTO {
+  name: String!
+  departmentId: String!
+}
+
+input UpdateCourseDTO {
+  name: String
+  departmentId: String
+  courseId: String!
+  status: Boolean
+}
+
+input CreateTopicDTO {
+  name: String!
+  courseId: String!
+}
+
+input UpdateTopicDTO {
+  name: String
+  courseId: String
+  topicId: String!
+  status: Boolean
+}
+
+input CreateQuestionDTO {
+  text: String!
+  isSingleChoiceAnswer: Boolean
+  answers: [CreateAnswerDTO!]!
+  explanation: String
+
+  """Add topic to attach question to a topic"""
+  topicId: String
+
+  """Contains list of pictures or other media attached to a question"""
+  attachments: [CreateQuestionAttachmentDTO!]
+}
+
+input CreateAnswerDTO {
+  text: String!
+  isCorrect: Boolean!
+
+  """Contains list of pictures or other media attached to an answer"""
+  attachments: [CreateAnswerAttachmentDTO!]
+}
+
+input CreateAnswerAttachmentDTO {
+  link: String!
+  fileType: FileType!
+
+  """Location of the file in the string 'text'"""
+  stringPosition: Int
+}
+
+input CreateQuestionAttachmentDTO {
+  link: String!
+  fileType: FileType!
+
+  """Location of the file in the string 'text'"""
+  stringPosition: Int
+}
+
+input LoginDTO {
+  email: String!
+  password: String!
+}
